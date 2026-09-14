@@ -1,0 +1,5 @@
+sentence,label
+"PyTorch is a machine learning framework.",1
+"It supports automatic differentiation.",1
+"It was originally developed by Meta.",0
+"PyTorch is widely used for deep learning.",1
