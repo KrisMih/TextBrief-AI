@@ -48,16 +48,16 @@ def main():
         total_samples = 0
 
         for sentence_batch, label_batch in dataloader:
-            optimizer.zero_grad()  # Clear gradients from the previous step.
+            optimizer.zero_grad()  #Clear gradients from the previous step.
 
             logits = model(sentence_batch)
             loss = criterion(logits, label_batch) #Calculate the loss for the current batch.
 
-            loss.backward()  # Compute gradients.
-            optimizer.step()  # Update the trainable parameters.
+            loss.backward()  #Compute gradients.
+            optimizer.step()  #Update the trainable parameters, using the computed gradients from 'loss.backward'.
 
-            total_loss += loss.item() * label_batch.size(0)
-            total_samples += label_batch.size(0)
+            total_loss += loss.item() * label_batch.size(0) #0 because we want the first dimension([0, 1, 2] - as in shape).
+            total_samples += label_batch.size(0) 
 
         average_loss = total_loss / total_samples
         print(f"Epoch {epoch + 1}: Loss = {average_loss:.4f}")
@@ -88,3 +88,5 @@ if __name__ == "__main__":
 #backward() computes gradients, but an optimizer is needed to actually update the model's weights.
 #Gradients are stored in each parameter's .grad; backward() does not update the weights.
 #1 'epoch()' - 1 iteration throughout all training batches.
+#loss.item() gets a value from a tensor, with one number and turns it into a normal python number.
+#'criterion = nn.BCEWithLogitsLoss()' sets up the function that calculates the loss and 'loss = criterion(logits, label_batch)' uses the defined function and calculates the current batch's loss.
