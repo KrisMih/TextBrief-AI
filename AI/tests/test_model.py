@@ -1,5 +1,7 @@
 import pandas as pd
 from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch.optim as optim
 
 from data.preprocessing import build_vocabulary
 from data.dataset import TextSummaryDataset
@@ -35,23 +37,32 @@ model = TextSummarizer(
     padding_idx=0
 )
 
-#Take one batch and pass it through the model.
-for sentence_batch, label_batch in dataloader:
-    output = model(sentence_batch)
+optimizer = optim.Adam(model.parameters(), lr=0.01)  #Updates the model's trainable parameters.
+criterion = nn.BCEWithLogitsLoss()  #Loss function for binary classification.
+model.train()  #Set the model to training mode.
 
-    print("Input batch:")
-    print(sentence_batch)
+for epoch in range(30):
+    total_loss = 0.0
+    total_samples = 0
 
-    print("\nInput shape:")
-    print(sentence_batch.shape)
+    for sentence_batch, label_batch in dataloader:
+        optimizer.zero_grad()  #Clear gradients from the previous step.
 
-    print("\nLabels:")
-    print(label_batch)
+        logits = model(sentence_batch)  #Predict one logit per sentence.
+        loss = criterion(logits, label_batch)  #Calculate the batch loss.
 
-    print("\nEmbedding output:")
-    print(output)
+        loss.backward()  #Calculate gradients.
+        optimizer.step()  #Update the model's parameters.
 
-    print("\nEmbedding output shape:")
-    print(output.shape)
+        total_loss += loss.item() * label_batch.size(0)
+        total_samples += label_batch.size(0)
 
-    break
+    average_loss = total_loss / total_samples
+    print(f"Epoch {epoch + 1}: Loss = {average_loss:.4f}")
+
+#BCEWithLogitsLoss compares the raw logits with the true labels (0 or 1) and computes the average loss for the batch.
+#loss.item() converts the single-value loss tensor into a Python number so we can print it.
+#The loss measures how well the predicted logits match the true labels; it is not an accuracy percentage.
+#backward() computes gradients, but an optimizer is needed to actually update the model's weights.
+#Gradients are stored in each parameter's .grad; backward() does not update the weights.
+#1 'epoch()' - 1 iteration throughout all training batches.

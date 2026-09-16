@@ -10,6 +10,7 @@ class TextSummarizer(nn.Module):
             embedding_dim, #The amount of columns.
             padding_idx #The token ID used for padding. Its embedding vector is not updated during training.
         )
+        self.classifier = nn.Linear(embedding_dim, 1)  # Converts each sentence vector into one importance logit.
         self.padding_idx = padding_idx #Here we create an attribute 'padding_idx' in the 'TextSummarizer' object, that is initialized to 0.
 
 #Embedding is a trainable lookup table that converts token IDs into numerical vectors.
@@ -52,7 +53,9 @@ class TextSummarizer(nn.Module):
         summed_embeddings = masked_embeddings.sum(1) #Sum all of the embedding vectors for a sentence into 1. 
         tokens_count = mask.sum(dim=1) #Counts the amount of real tokens in a sentence by summing them up(True = 1, False = 0).
         sentence_vectors = summed_embeddings / tokens_count.clamp(min=1) #Calculates the average embedding vector for each sentence by dividing the sum of its token embeddings by the number of real tokens. clamp(min=1) prevents division by zero.
-        return sentence_vectors #Returns one averaged embedding vector per sentence, with shape [batch_size, embedding_dim].
+        logits = self.classifier(sentence_vectors) #Shape: [batch_size, 1]
+        logits = logits.squeeze(-1) #Shape: [batch_size]
+        return logits
 
 #Returns one averaged embedding vector per sentence, with shape [batch_size, embedding_dim].
 #The 'forward()' function shows how the data 'travles' through the model. We pass the variable 'x' through the embedding layer('x' is a tensor that contains token IDs), and we return the embedding vectors of each of the input's tensor's token IDs.
@@ -77,3 +80,8 @@ class TextSummarizer(nn.Module):
 #Mean pooling combines all real token embeddings into one vector per sentence.
 #We use the average instead of the sum to reduce the effect of sentence length.
 #Padding tokens are excluded, so we divide only by the number of real tokens.
+
+#IMPORTANT:
+#The Linear layer produces one raw importance score (logit) per sentence.
+#squeeze(-1) removes the last dimension: [batch_size, 1] -> [batch_size], without changing the values.
+#This makes the logits' shape match the labels' shape for BCEWithLogitsLoss.
