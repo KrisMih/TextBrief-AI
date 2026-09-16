@@ -1,5 +1,27 @@
 sentence,label
-"PyTorch is a machine learning framework.",1
-"It supports automatic differentiation.",1
-"It was originally developed by Meta.",0
-"PyTorch is widely used for deep learning.",1
+PyTorch is a machine learning framework.,1
+It was originally developed by Meta.,0
+PyTorch uses tensors to represent numerical data.,1
+Autograd computes gradients during model training.,1
+Neural networks contain layers with trainable parameters.,1
+An optimizer updates model parameters during training.,1
+Training data provides examples and target labels.,1
+A loss function measures prediction errors.,1
+Inference uses trained parameters to make predictions.,1
+Models can be saved and loaded later.,1
+PyTorch supports running computations on GPUs.,1
+Padding makes sequences have consistent lengths.,1
+Embeddings represent tokens as numerical vectors.,1
+A classifier predicts a label for each sentence.,1
+The tutorial uses a blue background.,0
+The author wrote these notes on Monday.,0
+A student opened the project folder.,0
+The example file has a short name.,0
+Someone drank coffee before the lesson.,0
+The computer is sitting near a window.,0
+This paragraph appears near the end.,0
+The instructor changed the slide color.,0
+The room was quiet during the demonstration.,0
+The keyboard has several function keys.,0
+A notebook was placed beside the laptop.,0
+The presentation started after lunch.,0
