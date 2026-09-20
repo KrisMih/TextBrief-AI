@@ -7,12 +7,19 @@ import com.krismih.backend.auth.dto.request.RegisterRequest;
 import com.krismih.backend.auth.dto.response.AuthResponse;
 import com.krismih.backend.auth.dto.response.UserDetailsResponse;
 import com.krismih.backend.auth.entity.User;
+import com.krismih.backend.auth.repository.UserRepository;
 import com.krismih.backend.auth.service.UserService;
+import com.krismih.backend.exception.custom.ResourceNotFoundException;
+import com.krismih.backend.summary.dto.response.SummariesResponse;
+import com.krismih.backend.summary.repository.SummaryRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -51,5 +58,10 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDetailsResponse> getCurrentUser() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getCurrentUser());
+    }
+
+    @GetMapping("/summaries")
+    public ResponseEntity<SummariesResponse> getSummariesController() {
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.getSummaries());
     }
 }

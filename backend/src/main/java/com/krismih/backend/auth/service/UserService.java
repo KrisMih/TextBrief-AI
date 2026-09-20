@@ -9,9 +9,16 @@ import com.krismih.backend.auth.entity.User;
 import com.krismih.backend.auth.repository.UserRepository;
 import com.krismih.backend.exception.custom.ResourceNotFoundException;
 import com.krismih.backend.security.JwtUtil;
+import com.krismih.backend.summary.dto.response.SummariesResponse;
+import com.krismih.backend.summary.dto.response.SummaryResponse;
+import com.krismih.backend.summary.entity.Summary;
+import com.krismih.backend.summary.repository.SummaryRepository;
+import com.krismih.backend.summary.entity.Summary;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -20,12 +27,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
+    private final SummaryRepository summaryRepository;
 
-    public UserService(UserRepository userRepository,  PasswordEncoder passwordEncoder,  JwtUtil jwtUtil,  RefreshTokenService refreshTokenService) {
+    public UserService(UserRepository userRepository,  PasswordEncoder passwordEncoder,  JwtUtil jwtUtil,  RefreshTokenService refreshTokenService, SummaryRepository summaryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService;
+        this.summaryRepository = summaryRepository;
     }
 
     public void registerUser(RegisterRequest request) {
@@ -85,4 +94,25 @@ public class UserService {
 
         return new UserDetailsResponse(user.getId(), user.getUsername());
     }
+
+    public SummariesResponse getSummaries() {
+        String username = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        List<SummaryResponse> summaries = summaryRepository
+                .findAllByAssociatedUserOrderByIdDesc(currentUser)
+                .stream()
+                .map(summary -> new SummaryResponse(
+                        summary.getId(),
+                        summary.getSummary()
+                ))
+                .toList();
+
+        return new SummariesResponse(summaries);
+    }
+
 }

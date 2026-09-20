@@ -1,8 +1,12 @@
 package com.krismih.backend.auth.entity;
 
+import com.krismih.backend.summary.entity.Summary;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,4 +23,7 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "associatedUser", fetch = FetchType.LAZY)
+    private List<Summary> summaries = new ArrayList<>();
 }

@@ -2,3 +2,4 @@ venv/
 artifacts/
 src/model/__pycache__
 src/inference/__pycache__
+src/api/__pycache__
